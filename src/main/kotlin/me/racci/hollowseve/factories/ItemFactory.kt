@@ -8,9 +8,14 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.apache.commons.collections4.MultiMap
+import org.apache.commons.collections4.map.MultiValueMap
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
@@ -32,16 +37,15 @@ class ItemFactory {
 
         fun gradient(name: String, bold: Boolean = true) =
             when(bold) {
-                true -> MiniMessage.get().parse("<gradient:#6fe461:#3f473f><bold>$name</gradient>")
-                false -> MiniMessage.get().parse("<gradient:#6fe461:#3f473f>$name</gradient>")
+                true -> MiniMessage.get().parse("<gradient:#6fe461:#3f473f><bold>$name</gradient>").decoration(TextDecoration.ITALIC, false)
+                false -> MiniMessage.get().parse("<gradient:#6fe461:#3f473f>$name</gradient>").decoration(TextDecoration.ITALIC, false)
             }
-
         val resolver: Function<String, ComponentLike> = Function<String, ComponentLike> { name ->
             when(name.lowercase()) {
                 "hollowseve" -> MiniMessage.get().parse("<gradient:#6fe461:#3f473f>Hollow's Eve</gradient>")
-                "chuck" -> MiniMessage.get().parse("<white><bold>- <gold>Chuck")
-                "gigi" -> MiniMessage.get().parse("<white><bold>- <gold>Gigi")
-                "unknown" -> MiniMessage.get().parse("<white><bold>- <grey>Unknown")
+                "chuck" -> MiniMessage.get().parse("<white>- <green><bold>Chuck")
+                "gigi" -> MiniMessage.get().parse("<white>- <yellow><bold>Gigi")
+                "unknown" -> MiniMessage.get().parse("<white>- <grey><bold>Unknown")
                 else -> null
             }
         }
@@ -49,10 +53,9 @@ class ItemFactory {
 
         var universalLore = listOf(
             Component.empty(),
-            MiniMessage.get().parse("<yellow>Used to make Candy Corn Armour").decoration(TextDecoration.ITALIC, false),
-            Component.empty(),
-            MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>Part of the <hollowseve> event.").decoration(TextDecoration.ITALIC, false),
+            MiniMessage.get().parse("<white>Part of the <#6fe461>Hollow's Eve <white>event.").decoration(TextDecoration.ITALIC, false),
         )
+
 
         items[CANDY_CORN] = ItemBuilder.from(Material.GOLD_NUGGET)
             .name(gradient("Candy Corn"))
@@ -60,8 +63,10 @@ class ItemFactory {
                 MiniMessage.get().parse("<yellow>\"People swear that it's edible").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>but sometimes it's hard as a rock.").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>...wonder if it has another use...\" <Chuck>").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<white>» <green>Used to make Candy Corn Ingots").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
-            .pdc{it.set(namespaces[CANDY_CORN]!!, PersistentDataType.BYTE, 1.toByte())}
+            .pdc {it.set(namespaces[CANDY_CORN]!!, PersistentDataType.BYTE, 1.toByte())}
             .build()
 
         items[CANDY_CORN_INGOT] = ItemBuilder.from(Material.GOLD_INGOT)
@@ -69,69 +74,71 @@ class ItemFactory {
             .lore(listOf(
                 MiniMessage.get().parse("<yellow>\"I don't think I can buy that off you.").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>Maybe you could make something?\" <Gigi>").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<white>» <green>Used to make Candy Corn Armour").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
-            .pdc{it.set(namespaces[CANDY_CORN_INGOT]!!, PersistentDataType.BYTE, 1.toByte())}
             .build()
 
         universalLore = listOf(
             Component.empty(),
-            MiniMessage.get().parse(" <white><bold> » <yellow>Wear the full set for a massive speed boost").decoration(TextDecoration.ITALIC, false),
+            MiniMessage.get().parse("<white>» <green>Wear the full set for a massive speed boost").decoration(TextDecoration.ITALIC, false),
             Component.empty(),
-            MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>Part of the <hollowseve> event.").decoration(TextDecoration.ITALIC, false),
+            MiniMessage.get().parse("<white>Part of the <#6fe461>Hollow's Eve <white>event.").decoration(TextDecoration.ITALIC, false),
             )
 
         items[CANDY_CORN_HELMET] = ItemBuilder.from(Material.GOLDEN_HELMET)
             .name(gradient("Candy Corn Helmet"))
             .enchant(Enchantment.DURABILITY, 4)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>A Helmet made from candy corn").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>You can feel the uncontrolled sugar.").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
-            .pdc {it.set(namespaces[CANDY_CORN_HELMET]!!, PersistentDataType.BYTE, 1.toByte())}
             .build()
 
         items[CANDY_CORN_CHESTPLATE] = ItemBuilder.from(Material.GOLDEN_CHESTPLATE)
             .name(gradient("Candy Corn Chestplate"))
             .enchant(Enchantment.DURABILITY, 4)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>A Chestplate made from candy corn").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>You can feel the uncontrolled sugar.").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
-            .pdc {it.set(namespaces[CANDY_CORN_CHESTPLATE]!!, PersistentDataType.BYTE, 1.toByte())}
             .build()
 
         items[CANDY_CORN_PANTS] = ItemBuilder.from(Material.GOLDEN_LEGGINGS)
             .name(gradient("Candy Corn Pants"))
             .enchant(Enchantment.DURABILITY, 4)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>Pants made from candy corn").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>You can feel the uncontrolled sugar.").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
-            .pdc {it.set(namespaces[CANDY_CORN_PANTS]!!, PersistentDataType.BYTE, 1.toByte())}
             .build()
 
         items[CANDY_CORN_BOOTS] = ItemBuilder.from(Material.GOLDEN_BOOTS)
             .name(gradient("Candy Corn Boots"))
             .enchant(Enchantment.DURABILITY, 4)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>Boots made from candy corn").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>You can feel the uncontrolled sugar.").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
-            .pdc {it.set(namespaces[CANDY_CORN_BOOTS]!!, PersistentDataType.BYTE, 1.toByte())}
             .build()
 
         universalLore = listOf(
             Component.empty(),
-            MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>Part of the <hollowseve> event.").decoration(TextDecoration.ITALIC, false),
+            MiniMessage.get().parse("<white>Part of the <#6fe461>Hollow's Eve <white>event.").decoration(TextDecoration.ITALIC, false),
         )
 
         items[ONCE_PREY_BOOTS] = ItemBuilder.from(Material.NETHERITE_BOOTS)
             .name(gradient("Once-Prey Boots"))
-            .enchant(Enchantment.PROTECTION_FALL, 7)
+            .enchant(Enchantment.PROTECTION_ENVIRONMENTAL, 7)
             .enchant(Enchantment.DURABILITY, 5)
             .enchant(Enchantment.SOUL_SPEED, 4)
             .enchant(Enchantment.MENDING)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>\"The undead think we have no choice").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>but to fear them. Let's show them just").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("how wrong they are.\" <Chuck>").decoration(TextDecoration.ITALIC, false),
@@ -146,6 +153,7 @@ class ItemFactory {
             .enchant(Enchantment.DURABILITY, 5)
             .enchant(EcoEnchants.REVENANT, 6)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>\"Ah, one of my old crossbows.").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>Turns arrows into shards of pure silver.").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("Let's see you put it to use\" <Chuck>").decoration(TextDecoration.ITALIC, false),
@@ -162,6 +170,7 @@ class ItemFactory {
             .enchant(Enchantment.DURABILITY, 5)
             .enchant(Enchantment.MENDING)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>\"When the soul sands dry, and the innocent sing.").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>The undead shall hear me. And hear my ring\" <Unknown>").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
@@ -172,10 +181,11 @@ class ItemFactory {
             .enchant(EcoEnchants.BEHEADING, 5)
             .enchant(EcoEnchants.LEECHING, 6)
             .enchant(EcoEnchants.BLEED, 7)
-            .enchant(Enchantment.DAMAGE_ALL, 8)
+            .enchant(Enchantment.DAMAGE_ALL, 7)
             .enchant(Enchantment.DURABILITY, 5)
             .enchant(Enchantment.MENDING)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>\"A grim tradition. In parts of the mountains,").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>it was thought being buried headless could").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>save you. I hope this axe finds better purpose").decoration(TextDecoration.ITALIC, false),
@@ -191,6 +201,7 @@ class ItemFactory {
             .enchant(Enchantment.DURABILITY, 5)
             .enchant(Enchantment.MENDING)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>\"Gets cold enough, the hardest soil can").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>feel like the average slate.\" - Chuck").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
@@ -198,54 +209,150 @@ class ItemFactory {
 
         items[CANDY_PAIL] = ItemBuilder.from(Material.BUCKET)
             .name(gradient("Candy Pail"))
+            .glow()
             .lore(listOf(
                 MiniMessage.get().parse("<yellow>\"It's an old tradition to go around in costume,").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>asking for candy. Go on, give it a try\" <Chuck>").decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                MiniMessage.get().parse("<yellow>Right-click on <gold>Chuck<yellow>, <gold>Gigi<yellow>, or <gold>Bug to get candy!").decoration(TextDecoration.ITALIC, false),
-            ).plus(universalLore))
+                MiniMessage.get().parse("<yellow>Right-click on <green><bold>Chuck</bold><yellow>, <yellow><bold>Gigi</bold><yellow>, or <gold><bold>Bug</bold> <yellow>to get candy!").decoration(TextDecoration.ITALIC, false),
+            ))
             .build()
 
-        items[GUMMY_FISH] = ItemBuilder.from(Material.TROPICAL_FISH).build()
+        items[GUMMY_FISH] = ItemBuilder.from(Material.TROPICAL_FISH)
+            .name(gradient("Gummy Fish"))
+            .glow()
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>A gummy fish! Come in <gold>orange<yellow>, <red>cherry<yellow>, and <dark_purple>grape").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>Popular among young children and Merlings").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<white>» <green>Grants bonus food and speed on consumption").decoration(TextDecoration.ITALIC, false),
+            ))
+            .build()
 
-        items[CANDIED_BERRIES] = ItemBuilder.from(Material.SWEET_BERRIES).build()
+        items[CANDIED_BERRIES] = ItemBuilder.from(Material.SWEET_BERRIES)
+            .name(gradient("Candied Berries"))
+            .glow()
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>Native berries with a candy coating!").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>Favoured candy of the Fae and Beastfolk.").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<white>» <green>Grants bonus food and speed on consumption").decoration(TextDecoration.ITALIC, false),
+            ))
+            .build()
 
-        items[BOWL_OF_CHOCOLATES] = ItemBuilder.from(Material.SUSPICIOUS_STEW).build()
+        items[BOWL_OF_CHOCOLATES] = ItemBuilder.from(Material.SUSPICIOUS_STEW)
+            .name(gradient("Bowl of Chocolates"))
+            .glow()
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>A bowl of candy coated chocolates!").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>Invented by humanity for long treks.").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<white>» <green>Grants bonus food and speed on consumption").decoration(TextDecoration.ITALIC, false),
+            ))
+            .build()
 
-        items[HOLY_SABER] = ItemBuilder.from(Material.NETHERITE_SWORD)
-            .name(gradient("Holy Saber"))
+        items[ONCE_HOLY_SABER] = ItemBuilder.from(Material.NETHERITE_SWORD)
+            .name(gradient("Once-Holy Saber"))
             .enchant(Enchantment.DAMAGE_UNDEAD, 7)
             .enchant(EcoEnchants.MISSILE, 4)
             .enchant(Enchantment.FIRE_ASPECT, 5)
             .enchant(Enchantment.DURABILITY, 5)
             .enchant(Enchantment.MENDING, 1)
             .lore(listOf(
+                Component.empty(),
                 MiniMessage.get().parse("<yellow>The sword of a once great hero.").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.get().parse("<yellow>Even still, it wards off the dark").decoration(TextDecoration.ITALIC, false),
                 MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>that has come to taint it.").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
             .build()
 
-        items[HOLLOWS_EVE_HAT] = ItemBuilder.from(Material.JACK_O_LANTERN)
+        var hat = ItemBuilder.from(Material.JACK_O_LANTERN)
             .name(gradient("Hollow's Eve Hat 2021"))
+            .glow()
             .lore(listOf(
                 MiniMessage.get().parse("<yellow>\"What do you think?").decoration(TextDecoration.ITALIC, false),
-                MiniMessage.get().parse("<yellow>I think it’s my scariest work yet!").decoration(TextDecoration.ITALIC, false),
-                MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>Just don’t go down out there.\" <Gigi>").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>I let Hoggers help out on this one.").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.builder().placeholderResolver(resolver).build().parse("<yellow>Little guy has talent, I'll admit it.\" <Gigi>").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<green>Reduces mob detection range by 50%").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<green>year round.").decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                MiniMessage.get().parse("<#6fe461>Hollow's Eve <green>2021.").decoration(TextDecoration.ITALIC, false),
             ).plus(universalLore))
             .build()
+        var meta = hat.itemMeta
+        meta.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeModifier(UUID.randomUUID(), "1", 4.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HEAD))
+        meta.addAttributeModifier(Attribute.GENERIC_ARMOR, AttributeModifier(UUID.randomUUID(), "1", 2.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HEAD))
+        hat.itemMeta = meta
+        items[HOLLOWS_EVE_HAT] = hat
 
-        items[STRIDER_MAN_MASK] = ItemBuilder.skull().build()
+        hat = ItemBuilder.skull()
+            .name(gradient("Strider Man Mask"))
+            .glow()
+            .texture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RkOWE3NDQ0NTNhNDUzOGY1NzU2Y2JjNDZmYTRjMzk5NGI2N2I4MGZlM2I4YWYwN2IwNDg2YWEwMjU0MDkyZiJ9fX0=")
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>\"Strider Man, Strider Man,").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>does whatever a Strider").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>can!\" <white>- <red><bold>Hoggers").decoration(TextDecoration.ITALIC, false),
+            ).plus(universalLore))
+            .build()
+        meta = hat.itemMeta
+        meta.addAttributeModifier(Attribute.GENERIC_ARMOR, AttributeModifier(UUID.randomUUID(), "yes", 2.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HEAD))
+        hat.itemMeta = meta
+        items[STRIDER_MAN_MASK] = hat
 
-        items[CLOWN_MASK] = ItemBuilder.skull().build()
+        hat = ItemBuilder.skull()
+            .name(gradient("Clown Mask"))
+            .glow()
+            .texture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzljZWRmNzgwZTVhYjAxYTNiYjY5ZjM3ZjBkNzc4OGE0YTM1MTNjYjNhMmU0Y2Q4OGJiNjA1MWI0MjdhYTgzMSJ9fX0=")
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>\"Humans thing they're funny, but").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>Everyone else things they're scary.").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>It's weeeeeird!\" <white>- <red><bold>Hoggers").decoration(TextDecoration.ITALIC, false),
+            ).plus(universalLore))
+            .build()
+        meta = hat.itemMeta
+        meta.addAttributeModifier(Attribute.GENERIC_ARMOR, AttributeModifier(UUID.randomUUID(), "yes", 2.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HEAD))
+        hat.itemMeta = meta
+        items[CLOWN_MASK] = hat
 
-        items[SCARECROW_MASK] = ItemBuilder.skull().build()
+        hat = ItemBuilder.skull()
+            .name(gradient("Scarecrow Mask"))
+            .glow()
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>\"I think these are for scaring off").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>birds, but an Angel told me they're").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>scary, so here they are!\" <white>- <red><bold>Hoggers").decoration(TextDecoration.ITALIC, false),
+            ).plus(universalLore))
+            .build()
+        meta = hat.itemMeta
+        meta.addAttributeModifier(Attribute.GENERIC_ARMOR, AttributeModifier(UUID.randomUUID(), "yes", 2.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HEAD))
+        hat.itemMeta = meta
+        items[SCARECROW_MASK] = hat
 
-        items[UNDEAD_MASK] = ItemBuilder.skull().build()
-
+        hat = ItemBuilder.skull()
+            .name(gradient("Undead Mask"))
+            .glow()
+            .lore(listOf(
+                MiniMessage.get().parse("<yellow>\"My best work yet! Is it realistic?").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>Is it gooooorey ...I've never seen").decoration(TextDecoration.ITALIC, false),
+                MiniMessage.get().parse("<yellow>one. I hope it is...\" <white>- <red><bold>Hoggers").decoration(TextDecoration.ITALIC, false),
+            ).plus(universalLore))
+            .build()
+        meta = hat.itemMeta
+        meta.addAttributeModifier(Attribute.GENERIC_ARMOR, AttributeModifier(UUID.randomUUID(), "yes", 2.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HEAD))
+        hat.itemMeta = meta
+        items[UNDEAD_MASK] = hat
 
         items.entries.forEach {
-            it.value.persistentDataContainer.set(namespaces[it.key]!!, PersistentDataType.BYTE, 1.toByte())
+            it.setValue(ItemBuilder.from(it.value)
+                .pdc { pdc ->
+                    val value = if(it.key == CANDY_CORN_HELMET || it.key == CANDY_CORN_CHESTPLATE || it.key == CANDY_CORN_PANTS || it.key == CANDY_CORN_BOOTS) {
+                        namespaces[CANDY_CORN_ARMOUR]!!
+                    } else namespaces[it.key]!!
+                    pdc.set(value, PersistentDataType.BYTE, 1.toByte())
+                }
+                .build())
         }
 
 

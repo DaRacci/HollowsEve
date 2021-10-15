@@ -5,6 +5,7 @@ enum class HollowsEve2021 {
     // Candy Corn items
     CANDY_CORN,
     CANDY_CORN_INGOT,
+    CANDY_CORN_ARMOUR,
     CANDY_CORN_HELMET,
     CANDY_CORN_CHESTPLATE,
     CANDY_CORN_PANTS,
@@ -24,7 +25,7 @@ enum class HollowsEve2021 {
     BOWL_OF_CHOCOLATES,
 
     // Misc
-    HOLY_SABER,
+    ONCE_HOLY_SABER,
     HOLLOWS_EVE_HAT,
     STRIDER_MAN_MASK,
     CLOWN_MASK,
