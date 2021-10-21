@@ -31,6 +31,7 @@ enum class HollowsEve2021 {
     CLOWN_MASK,
     SCARECROW_MASK,
     UNDEAD_MASK,
+    CANDY_SWORD,
 
 
 
