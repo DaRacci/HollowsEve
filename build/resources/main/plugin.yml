@@ -1,8 +1,0 @@
-name: HollowsEve
-version: 2021
-main: me.racci.hollowseve.HollowsEve
-api-version: 1.17
-load: STARTUP
-authors: [ Racci ]
-description: HollowsEve 2021
-depend: [ RacciCore, EcoEnchants ]
