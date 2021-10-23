@@ -113,4 +113,5 @@ buildNumber.properties
 run/
 build/
 /build/
-/build/
+/build
+build/*
