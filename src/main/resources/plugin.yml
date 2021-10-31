@@ -6,3 +6,4 @@ load: STARTUP
 authors: [ Racci ]
 description: HollowsEve 2021
 depend: [ RacciCore, EcoEnchants ]
+softdepend: [ Citizens ]
