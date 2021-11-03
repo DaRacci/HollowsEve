@@ -9,6 +9,7 @@ import me.racci.hollowseve.factories.ItemFactory
 import me.racci.hollowseve.gui
 import me.racci.hollowseve.plugin
 import me.racci.raccicore.utils.extensions.KotlinListener
+import me.racci.raccicore.utils.now
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -22,15 +23,13 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import su.nightexpress.goldencrates.api.GoldenCratesAPI
 import java.time.Duration
-import java.util.*
+import java.util.UUID
 import kotlin.random.Random
 
 class HollowEve2021Listener : KotlinListener {
@@ -103,21 +102,26 @@ class HollowEve2021Listener : KotlinListener {
         val oldPDC = event.oldItem?.itemMeta?.persistentDataContainer
         val newPDC = event.newItem?.itemMeta?.persistentDataContainer
 
+        if(event.player.isDead) return@withContext
+
 
         if(newPDC != oldPDC) {
             if(oldPDC?.has(ItemFactory[HollowsEve2021.CANDY_CORN_ARMOUR, true], PersistentDataType.BYTE) == true) {
-                event.player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.removeModifier(speedModifier)
+                event.player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.apply {
+                    if(this.modifiers.contains(speedModifier)) {
+                        removeModifier(speedModifier)
+                    }
+                }
             } else if(oldPDC?.has(ItemFactory[HollowsEve2021.HOLLOWS_EVE_HAT, true], PersistentDataType.BYTE) == true
                 && event.player.getPotionEffect(PotionEffectType.INVISIBILITY)?.key == ItemFactory[HollowsEve2021.HOLLOWS_EVE_HAT, true]) {
                 withContext(plugin.minecraftDispatcher) {event.player.removePotionEffect(PotionEffectType.INVISIBILITY)}
             }
 
             if(newPDC?.has(ItemFactory[HollowsEve2021.CANDY_CORN_ARMOUR, true], PersistentDataType.BYTE) == true) {
-                if(event.player.inventory.armorContents
-                    .filterNotNull().filter { it.persistentDataContainer.has(ItemFactory[HollowsEve2021.CANDY_CORN_ARMOUR, true], PersistentDataType.BYTE) }.size == 4) {
-                    event.player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)!!.apply {
+                if(event.player.inventory.armorContents.toList().filter { it.persistentDataContainer.has(ItemFactory[HollowsEve2021.CANDY_CORN_ARMOUR, true], PersistentDataType.BYTE) }.size == 4) {
+                    event.player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.apply {
                         if(!this.modifiers.contains(speedModifier)) {
-                            event.player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)!!.addModifier(speedModifier)
+                            event.player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.addModifier(speedModifier)
                         }
                     }
                 }
@@ -127,21 +131,21 @@ class HollowEve2021Listener : KotlinListener {
         }
     }
 
-    @EventHandler
-    fun onHeadHat(event: InventoryClickEvent) {
-        if(event.cursor != null && !event.isShiftClick && (event.clickedInventory?.type == InventoryType.PLAYER
-            || event.clickedInventory?.type == InventoryType.CRAFTING)
-            && event.rawSlot == 5) {
-            event.isCancelled = true
-
-            val slotI = event.currentItem
-            val slotC = event.cursor
-
-            event.currentItem = slotC
-            event.whoClicked.setItemOnCursor(slotI)
-
-        }
-    }
+//    @EventHandler
+//    fun onHeadHat(event: InventoryClickEvent) {
+//        if(event.cursor != null && !event.isShiftClick && (event.clickedInventory?.type == InventoryType.PLAYER
+//            || event.clickedInventory?.type == InventoryType.CRAFTING)
+//            && event.rawSlot == 5) {
+//            event.isCancelled = true
+//
+//            val slotI = event.currentItem
+//            val slotC = event.cursor
+//
+//            event.currentItem = slotC
+//            event.whoClicked.setItemOnCursor(slotI)
+//
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlaceHatOrMask(event: BlockPlaceEvent) {
@@ -156,7 +160,7 @@ class HollowEve2021Listener : KotlinListener {
             in 0.33f..0.44f -> ItemFactory[HollowsEve2021.CANDIED_BERRIES].asQuantity(Random.nextInt(6, 12)) // 3 - 5
             in 0.44f..0.55f -> ItemFactory[HollowsEve2021.GUMMY_FISH].asQuantity(Random.nextInt(6, 9)) // 3-5
             in 0.55f..0.66f -> ItemFactory[HollowsEve2021.BOWL_OF_CHOCOLATES].asQuantity(Random.nextInt(2, 5))
-            in 0.66f..1f -> GoldenCratesAPI.getKeyManager().getKeyById("hollowseve")!!.item.asQuantity(Random.nextInt(1, 2))
+            in 0.66f..1f -> GoldenCratesAPI.getKeyManager().getKeyById("hollowseve")?.item?.asQuantity(Random.nextInt(1, 2))
             else -> null
         }
 
@@ -205,8 +209,10 @@ class HollowEve2021Listener : KotlinListener {
         }
 
         pdc[namespacedKey, PersistentDataType.LONG]!!.apply {
-            if((System.currentTimeMillis() - this) / 1000 < 28800) {
-                val var1 : Double = (28800.0 - ((System.currentTimeMillis() - this) / 1000)) / 3600
+            println("$this")
+            println("${now() - this}")
+            if((now() - this) < 28800) {
+                val var1 : Double = (28800.0 - (now() - this)) / 3600
                 val var2 = var1.toString().split(".").toTypedArray()
                 var2[1] = (var2[1].take(2).toInt() * 60).toString()
                 var2.joinToString()
@@ -226,11 +232,10 @@ class HollowEve2021Listener : KotlinListener {
                 event.clicker.showTitle(title)
                 return@withContext
             }
-
-            val item = trickOrTreat()!!
+            val item = trickOrTreat()
             event.clicker.apply {
-                persistentDataContainer[namespacedKey, PersistentDataType.LONG] = System.currentTimeMillis()
-                inventory.addItem(item)
+                persistentDataContainer[namespacedKey, PersistentDataType.LONG] = now()
+                if(item != null) inventory.addItem(item)
                 playSound(Sound.sound(Key.key("block.beehive.exit"), Sound.Source.PLAYER, 0.7f, 0.7f))
             }
         }
