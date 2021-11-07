@@ -207,12 +207,15 @@ class HollowEve2021Listener : KotlinListener {
         if(pdc[namespacedKey, PersistentDataType.LONG] == null) {
             pdc[namespacedKey, PersistentDataType.LONG] = 0L
         }
+        if(now().epochSeconds - pdc[namespacedKey, PersistentDataType.LONG]!! < 0) {
+            pdc[namespacedKey, PersistentDataType.LONG] = 0L
+        }
 
         pdc[namespacedKey, PersistentDataType.LONG]!!.apply {
             println("$this")
-            println("${now() - this}")
-            if((now() - this) < 28800) {
-                val var1 : Double = (28800.0 - (now() - this)) / 3600
+            println("${now().epochSeconds - this}")
+            if((now().epochSeconds - this) < 28800) {
+                val var1 : Double = (28800.0 - (now().epochSeconds - this)) / 3600
                 val var2 = var1.toString().split(".").toTypedArray()
                 var2[1] = (var2[1].take(2).toInt() * 60).toString()
                 var2.joinToString()
@@ -234,7 +237,7 @@ class HollowEve2021Listener : KotlinListener {
             }
             val item = trickOrTreat()
             event.clicker.apply {
-                persistentDataContainer[namespacedKey, PersistentDataType.LONG] = now()
+                persistentDataContainer[namespacedKey, PersistentDataType.LONG] = now().epochSeconds
                 if(item != null) inventory.addItem(item)
                 playSound(Sound.sound(Key.key("block.beehive.exit"), Sound.Source.PLAYER, 0.7f, 0.7f))
             }

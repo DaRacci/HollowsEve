@@ -9,7 +9,7 @@ import me.racci.hollowseve.listeners.HollowEve2021Listener
 import me.racci.raccicore.RacciPlugin
 import me.racci.raccicore.utils.extensions.KotlinListener
 import org.bukkit.inventory.ItemStack
-import java.util.*
+import java.util.Locale
 
 internal lateinit var plugin        : HollowsEve; private set
 lateinit var gui                    : GUI; private set
@@ -33,7 +33,7 @@ class HollowsEve : RacciPlugin() {
     override suspend fun handleDisable() {
         println("Im being Disabled")
         RecipeFactory.shutdown()
-        ItemFactory.shutdown()
+        ItemFactory.close()
     }
 
     override suspend fun registerListeners(): List<KotlinListener> {

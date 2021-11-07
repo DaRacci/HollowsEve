@@ -3,9 +3,9 @@ package me.racci.hollowseve.factories
 import kotlinx.coroutines.coroutineScope
 import me.racci.hollowseve.capitalizeWords
 import me.racci.hollowseve.enums.HollowsEve2021
+import me.racci.raccicore.builders.ItemBuilder
 import me.racci.raccicore.utils.catch
 import me.racci.raccicore.utils.extensions.addRecipe
-import me.racci.raccicore.utils.items.builders.ItemBuilder
 import me.racci.raccicore.utils.strings.colour
 import me.racci.raccicore.utils.strings.colouredTextOf
 import org.bukkit.Bukkit
@@ -54,16 +54,16 @@ object RecipeFactory {
             materials.forEach {
                 items.add(
                     SpecialItem(
-                        ItemBuilder.from(it)
-                            .name(colouredTextOf("&5Fat ${it.name.lowercase().capitalizeWords()}"))
-                            .glow()
-                            .model(55)
-                            .build(),
-                        ItemBuilder.from(it)
-                            .name(colouredTextOf("&5Thicc ${it.name.lowercase().capitalizeWords()}"))
-                            .glow()
-                            .model(55)
-                            .build(),
+                        ItemBuilder.from(it) {
+                            name = colouredTextOf("&5Fat ${it.name.lowercase().capitalizeWords()}")
+                            glow
+                            model = 55
+                        },
+                        ItemBuilder.from(it) {
+                            name = colouredTextOf("&5Thicc ${it.name.lowercase().capitalizeWords()}")
+                            glow
+                            model = 55
+                        },
                     )
                 )
             }
